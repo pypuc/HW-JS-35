@@ -1,16 +1,17 @@
-const API_URL = 'http://localhost:3000/students';
+import { getStudentsApi } from './api/getStudentsApi.js';
+import { addStudentApi } from './api/addStudentApi.js';
+import { editStudentApi } from './api/editStudentApi.js';
+import { deleteStudentApi } from './api/deleteStudentApi.js';
+
 function getStudents() {
-  fetch(API_URL)
-    .then(response => {
-      if (!response.ok) throw new Error('Не вдалося отримати дані');
-      return response.json();
-    })
+  getStudentsApi()
     .then(data => renderStudents(data))
     .catch(error => {
       console.error('Помилка отримання студентів:', error);
-      alert(' Не вдалося отримати список студентів');
+      alert('Не вдалося отримати список студентів');
     });
 }
+
 function renderStudents(students) {
   const tbody = document.querySelector('#students-table tbody');
   tbody.innerHTML = '';
@@ -36,6 +37,7 @@ function renderStudents(students) {
     tbody.appendChild(tr);
   });
 }
+
 function addStudent(e) {
   e.preventDefault();
 
@@ -48,15 +50,7 @@ function addStudent(e) {
 
   const newStudent = { name, age, course, skills, email, isEnrolled };
 
-  fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newStudent),
-  })
-    .then(response => {
-      if (!response.ok) throw new Error();
-      return response.json();
-    })
+  addStudentApi(newStudent)
     .then(() => {
       alert('Студента додано!');
       getStudents();
@@ -66,33 +60,24 @@ function addStudent(e) {
       alert('Помилка при додаванні студента');
     });
 }
+
 function editStudent(id) {
   const newName = prompt("Введіть нове ім'я студента:");
   if (!newName) return;
 
-  fetch(`${API_URL}/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: newName }),
-  })
-    .then(response => {
-      if (!response.ok) throw new Error();
-      return response.json();
-    })
+  editStudentApi(id, { name: newName })
     .then(() => {
       alert("Ім'я оновлено!");
       getStudents();
     })
     .catch(() => alert("Помилка при оновленні студента"));
 }
+
 function deleteStudent(id) {
   if (!confirm('Ви впевнені, що хочете видалити цього студента?')) return;
 
-  fetch(`${API_URL}/${id}`, {
-    method: 'DELETE',
-  })
-    .then(response => {
-      if (!response.ok) throw new Error();
+  deleteStudentApi(id)
+    .then(() => {
       alert('Студента видалено!');
       getStudents();
     })
@@ -101,15 +86,19 @@ function deleteStudent(id) {
 
 document.querySelector('#students-table tbody').addEventListener('click', function (e) {
   const tr = e.target.closest('tr');
-  const id = tr?.dataset.id;
 
-  if (e.target.classList.contains('edit-btn')) {
-    editStudent(id);
-  }
+  if (tr) {
+    const id = tr.dataset.id;
 
-  if (e.target.classList.contains('delete-btn')) {
-    deleteStudent(id);
+    if (e.target.classList.contains('edit-btn')) {
+      editStudent(id);
+    }
+
+    if (e.target.classList.contains('delete-btn')) {
+      deleteStudent(id);
+    }
   }
 });
+
 document.getElementById('get-students-btn').addEventListener('click', getStudents);
 document.getElementById('add-student-form').addEventListener('submit', addStudent);
