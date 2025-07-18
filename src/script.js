@@ -1,104 +1,60 @@
-import { getStudentsApi } from './api/getStudentsApi.js';
-import { addStudentApi } from './api/addStudentApi.js';
-import { editStudentApi } from './api/editStudentApi.js';
-import { deleteStudentApi } from './api/deleteStudentApi.js';
+import { getStudentsApi } from "./api/getStudentsApi.js";
+import { addStudentApi } from "./api/addStudentApi.js";
+import { deleteStudentApi } from "./api/deleteStudentApi.js";
 
-function getStudents() {
-  getStudentsApi()
-    .then(data => renderStudents(data))
-    .catch(error => {
-      console.error('Помилка отримання студентів:', error);
-      alert('Не вдалося отримати список студентів');
-    });
-}
+// Показати список
+document.querySelector("#get-students-btn").addEventListener("click", async () => {
+  const data = await getStudentsApi();
+  document.querySelector("tbody").innerHTML = makeList(data);
+});
 
-function renderStudents(students) {
-  const tbody = document.querySelector('#students-table tbody');
-  tbody.innerHTML = '';
+// Додати студента
+document.querySelector("#add-student-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-  students.forEach(student => {
-    const tr = document.createElement('tr');
-    tr.dataset.id = student.id;
+  const student = {
+    name: document.querySelector("#name").value,
+    age: Number(document.querySelector("#age").value),
+    course: document.querySelector("#course").value,
+    skills: document.querySelector("#skills").value.split(",").map(skill => skill.trim()),
+    email: document.querySelector("#email").value,
+    isEnrolled: document.querySelector("#isEnrolled").checked,
+  };
 
-    tr.innerHTML = `
-      <td>${student.id}</td>
-      <td>${student.name}</td>
-      <td>${student.age}</td>
-      <td>${student.course}</td>
-      <td>${student.skills.join(', ')}</td>
-      <td>${student.email}</td>
-      <td>${student.isEnrolled ? 'Так' : 'Ні'}</td>
-      <td>
-        <button class="edit-btn">Оновити</button>
-        <button class="delete-btn">Видалити</button>
-      </td>
-    `;
+  await addStudentApi(student);
 
-    tbody.appendChild(tr);
-  });
-}
+  const data = await getStudentsApi();
+  document.querySelector("tbody").innerHTML = makeList(data);
+  event.target.reset();
+});
 
-function addStudent(e) {
-  e.preventDefault();
+document.querySelector("tbody").addEventListener("click", async (event) => {
+  if (event.target.textContent === "Delete") {
+    const row = event.target.closest("tr");
+    const id = row.querySelector("td").textContent;
 
-  const name = document.getElementById('name').value;
-  const age = parseInt(document.getElementById('age').value);
-  const course = document.getElementById('course').value;
-  const skills = document.getElementById('skills').value.split(',').map(s => s.trim());
-  const email = document.getElementById('email').value;
-  const isEnrolled = document.getElementById('isEnrolled').checked;
+    await deleteStudentApi(id);
 
-  const newStudent = { name, age, course, skills, email, isEnrolled };
-
-  addStudentApi(newStudent)
-    .then(() => {
-      alert('Студента додано!');
-      getStudents();
-      e.target.reset();
-    })
-    .catch(() => {
-      alert('Помилка при додаванні студента');
-    });
-}
-
-function editStudent(id) {
-  const newName = prompt("Введіть нове ім'я студента:");
-  if (!newName) return;
-
-  editStudentApi(id, { name: newName })
-    .then(() => {
-      alert("Ім'я оновлено!");
-      getStudents();
-    })
-    .catch(() => alert("Помилка при оновленні студента"));
-}
-
-function deleteStudent(id) {
-  if (!confirm('Ви впевнені, що хочете видалити цього студента?')) return;
-
-  deleteStudentApi(id)
-    .then(() => {
-      alert('Студента видалено!');
-      getStudents();
-    })
-    .catch(() => alert('Помилка при видаленні студента'));
-}
-
-document.querySelector('#students-table tbody').addEventListener('click', function (e) {
-  const tr = e.target.closest('tr');
-
-  if (tr) {
-    const id = tr.dataset.id;
-
-    if (e.target.classList.contains('edit-btn')) {
-      editStudent(id);
-    }
-
-    if (e.target.classList.contains('delete-btn')) {
-      deleteStudent(id);
-    }
+    const data = await getStudentsApi();
+    document.querySelector("tbody").innerHTML = makeList(data);
   }
 });
 
-document.getElementById('get-students-btn').addEventListener('click', getStudents);
-document.getElementById('add-student-form').addEventListener('submit', addStudent);
+function makeList(arr) {
+  return arr
+    .map(
+      (student) => `
+      <tr>
+        <td>${student.id}</td>
+        <td>${student.name}</td>
+        <td>${student.age}</td>
+        <td>${student.course}</td>
+        <td>${student.skills.join(", ")}</td>
+        <td>${student.email}</td>
+        <td>${student.isEnrolled ? "Так" : "Ні"}</td>
+        <td><button type="button">Delete</button></td>
+      </tr>
+    `
+    )
+    .join("");
+}
