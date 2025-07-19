@@ -1,60 +1,88 @@
-import { getStudentsApi } from "./api/getStudentsApi.js";
-import { addStudentApi } from "./api/addStudentApi.js";
-import { deleteStudentApi } from "./api/deleteStudentApi.js";
+import getStudents from "./api/getStudentsApi";
+import updateStudent from "./api/editStudentApi";
+import addStudent from "./api/addStudentApi";
+import deleteStudents from "./api/deleteStudentApi";
 
-// Показати список
 document.querySelector("#get-students-btn").addEventListener("click", async () => {
-  const data = await getStudentsApi();
-  document.querySelector("tbody").innerHTML = makeList(data);
+  return await getStudents();
 });
 
-// Додати студента
-document.querySelector("#add-student-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
+const form = document.querySelector("#add-student-form");
 
-  const student = {
-    name: document.querySelector("#name").value,
-    age: Number(document.querySelector("#age").value),
-    course: document.querySelector("#course").value,
-    skills: document.querySelector("#skills").value.split(",").map(skill => skill.trim()),
-    email: document.querySelector("#email").value,
-    isEnrolled: document.querySelector("#isEnrolled").checked,
-  };
+function collectInfo(form) {
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = e.target.elements.nameCollect.value;
+    const age = e.target.elements.ageCollect.value;
+    const course = e.target.elements.courseCollect.value;
+    const skills = e.target.elements.skillsCollect.value.split(", ");
+    const email = e.target.elements.emailCollect.value;
+    let isEnrolled;
 
-  await addStudentApi(student);
+    if (e.target.elements.isEnrolledCollect.checked) {
+      isEnrolled = true;
+    } else {
+      isEnrolled = false;
+    }
 
-  const data = await getStudentsApi();
-  document.querySelector("tbody").innerHTML = makeList(data);
-  event.target.reset();
-});
+    const student = {
+      name: name,
+      age: age,
+      course: course,
+      skills: skills,
+      email: email,
+      isEnrolled: isEnrolled
+    };
 
-document.querySelector("tbody").addEventListener("click", async (event) => {
-  if (event.target.textContent === "Delete") {
-    const row = event.target.closest("tr");
-    const id = row.querySelector("td").textContent;
+    return addStudent(student);
+  });
+}
 
-    await deleteStudentApi(id);
+console.log(collectInfo(form));
+ 
+document.querySelector("tbody").addEventListener("click", async (e) => {
+  if (e.target.textContent === "Оновити") {
+    const buttonSection = e.target.parentElement;
+    const item = buttonSection.parentElement;
+    console.log(item.id);
+    document.querySelector(".backdrop").style.visibility = "visible";
+    document.querySelector(".backdrop").style.display = "flex";
+    document.querySelector("#update-student-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = e.target.elements.nameCollect.value;
+      const age = e.target.elements.ageCollect.value;
+      const course = e.target.elements.courseCollect.value;
+      const skills = e.target.elements.skillsCollect.value.split(", ");
+      const email = e.target.elements.emailCollect.value;
+      const isEnrolled = e.target.elements.isEnrolledCollect.checked;
+      const student = {
+        name: name,
+        age: age,
+        course: course,
+        skills: skills,
+        email: email,
+        isEnrolled: isEnrolled
+      };
+      document.querySelector(".backdrop").style.visibility = "hidden";
+      document.querySelector(".backdrop").style.display = "none";
+      try {
+        await updateStudent(item.id, student);
+      }catch (error) {
+        console.error(error)
+      }
+    })
+  }
+})
 
-    const data = await getStudentsApi();
-    document.querySelector("tbody").innerHTML = makeList(data);
+document.querySelector("tbody").addEventListener("click", async (e) => {
+  if (e.target.textContent === "Видалити") {
+    const buttonSection = e.target.parentElement;
+    const item = buttonSection.parentElement;
+    console.log(item.id);
+    try {
+      await deleteStudent(item.id);
+    } catch (error) {
+      console.log(error);
+    }
   }
 });
-
-function makeList(arr) {
-  return arr
-    .map(
-      (student) => `
-      <tr>
-        <td>${student.id}</td>
-        <td>${student.name}</td>
-        <td>${student.age}</td>
-        <td>${student.course}</td>
-        <td>${student.skills.join(", ")}</td>
-        <td>${student.email}</td>
-        <td>${student.isEnrolled ? "Так" : "Ні"}</td>
-        <td><button type="button">Delete</button></td>
-      </tr>
-    `
-    )
-    .join("");
-}

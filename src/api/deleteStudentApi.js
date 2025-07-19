@@ -1,7 +1,9 @@
-import { API_URL } from '../config.js';
-
-export const deleteStudentApi = async (id) => {
-  await fetch(`${API_URL}/${id}`, {
-    method: 'DELETE',
-  });
+export const deleteStudent = async (id) => {
+    try {
+        return await fetch(`http://localhost:3000/students/${id}`, {
+            method: "DELETE",
+        });
+    } catch (error) {
+        console.log(error);
+    }
 };

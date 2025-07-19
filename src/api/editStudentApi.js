@@ -1,11 +1,17 @@
-import { API_URL } from "../config.js";
-
-export const editStudentApi = async (id, student) => {
-  await fetch(`${API_URL}/${id}`, {
+export const updateStudent = async (id, student) => {
+  const options = {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify(student),
-  });
+    headers: {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+  };
+  try {
+    return await fetch(
+      `http://localhost:3000/students/${id}`,
+      options
+    ).then((response) => response.json());
+  } catch (error) {
+    console.log(error);
+  }
 };
