@@ -7,10 +7,7 @@ export const updateStudent = async (id, student) => {
     },
   };
   try {
-    return await fetch(
-      `http://localhost:3000/students/${id}`,
-      options
-    ).then((response) => response.json());
+    return await fetch(`http://localhost:3000/students/${id}`, options).then((res) => res.json());
   } catch (error) {
     console.log(error);
   }
