@@ -1,17 +1,3 @@
 {
-  "students": [
-    {
-      "id": "3",
-      "name": "Dmytro Shevchenko",
-      "age": 14,
-      "course": "Mobile App Development",
-      "skills": [
-        "Java",
-        "Kotlin",
-        "Android Studio"
-      ],
-      "email": "dmytro.shevchenko@example.com",
-      "isEnrolled": false
-    }
-  ]
+  "students": []
 }

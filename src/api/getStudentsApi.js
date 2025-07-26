@@ -1,11 +1,11 @@
+import { API_URL } from "../config.js";
+
 export const getStudents = async () => {
   try {
-    return await fetch("http://localhost:3000/students")
-      .then((res) => res.json())
-      .then((data) => {
-        const tableBody = document.querySelector("tbody");
-        tableBody.innerHTML = renderStudents(data).join("");
-      });
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    const tableBody = document.querySelector("tbody");
+    tableBody.innerHTML = renderStudents(data).join("");
   } catch (error) {
     console.log(error);
   }
