@@ -1,0 +1,14 @@
+const t="https://688fad55f21ab1769f89daac.mockapi.io/posts",e=async()=>{try{let e=await fetch(t),n=await e.json();document.querySelector("tbody").innerHTML=n.map(t=>{let e=t.skills.join(", ");return`
+      <tr id="${t.id}">
+        <td>${t.id}</td>
+        <td>${t.name}</td>
+        <td>${t.age}</td>
+        <td>${t.course}</td>
+        <td>${e}</td>
+        <td>${t.email}</td>
+        <td>${t.isEnrolled}</td>
+        <td><button type="button" class="delete-btn">\u{412}\u{438}\u{434}\u{430}\u{43B}\u{438}\u{442}\u{438}</button></td>
+        <td><button type="button" class="update-btn">\u{41E}\u{43D}\u{43E}\u{432}\u{438}\u{442}\u{438}</button></td>
+      </tr>
+    `}).join("")}catch(t){console.log("Помилка при отриманні студентів:",t)}},n=async(e,n)=>{let a={method:"PUT",body:JSON.stringify(n),headers:{"Content-Type":"application/json; charset=UTF-8"}};try{let n=await fetch(`${t}/${e}`,a);return await n.json()}catch(t){console.log("Помилка при оновленні:",t)}},a=async e=>{let n={method:"POST",body:JSON.stringify(e),headers:{"Content-Type":"application/json; charset=UTF-8"}};try{let e=await fetch(t,n);return await e.json()}catch(t){console.log("Помилка при додаванні:",t)}},l=async e=>{try{let n=await fetch(`${t}/${e}`,{method:"DELETE"});return await n.json()}catch(t){console.log("Помилка при видаленні:",t)}};document.querySelector("#get-students-btn").addEventListener("click",async()=>{await e()});const o=document.querySelector("#add-student-form");o.addEventListener("submit",t=>{t.preventDefault();let n=t.target.elements.name.value,l=t.target.elements.age.value,u=t.target.elements.course.value,r=t.target.elements.skills.value.split(", "),s=t.target.elements.email.value;a({name:n,age:l,course:u,skills:r,email:s,isEnrolled:t.target.elements.isEnrolled.checked}).then(()=>{e(),o.reset()})}),document.querySelector("tbody").addEventListener("click",async t=>{let a=t.target.closest("tr"),o=a.id;if("Оновити"===t.target.textContent){let t=a.querySelectorAll("td"),e=t[1].textContent,n=t[2].textContent,l=t[3].textContent,o=t[4].textContent,u=t[5].textContent,r="true"===t[6].textContent;t[1].innerHTML=`<input type="text" value="${e}">`,t[2].innerHTML=`<input type="number" value="${n}">`,t[3].innerHTML=`<input type="text" value="${l}">`,t[4].innerHTML=`<input type="text" value="${o}">`,t[5].innerHTML=`<input type="email" value="${u}">`,t[6].innerHTML=`<input type="checkbox" ${r?"checked":""}>`,t[7].innerHTML=`<button class="save-btn">\u{417}\u{431}\u{435}\u{440}\u{435}\u{433}\u{442}\u{438}</button>`}if(t.target.classList.contains("save-btn")){let t=a.querySelectorAll("input"),l={name:t[0].value,age:t[1].value,course:t[2].value,skills:t[3].value.split(", "),email:t[4].value,isEnrolled:t[5].checked};try{await n(o,l),await e()}catch(t){console.error("Помилка при оновленні:",t)}}if("Видалити"===t.target.textContent)try{await l(o),await e()}catch(t){console.error(t)}});
+//# sourceMappingURL=HW-JS-35.620ea132.js.map
