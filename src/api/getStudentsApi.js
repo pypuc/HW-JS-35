@@ -4,13 +4,10 @@ export const getStudents = async () => {
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
-    console.log("Сирі дані з сервера:", data);
-    console.log("Це масив?", Array.isArray(data));
-
     const tableBody = document.querySelector("tbody");
     tableBody.innerHTML = renderStudents(data).join("");
   } catch (error) {
-    console.log("Помилка при отриманні студентів:", error);
+    console.log(error);
   }
 };
 
