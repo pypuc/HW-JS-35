@@ -7,7 +7,7 @@ export const getStudents = async () => {
     const tableBody = document.querySelector("tbody");
     tableBody.innerHTML = renderStudents(data).join("");
   } catch (error) {
-    console.log(error);
+    console.log("Помилка при отриманні студентів:", error);
   }
 };
 

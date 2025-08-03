@@ -1,3 +1,5 @@
+import { API_URL } from "../config.js";
+
 export const addStudent = async (obj) => {
   const options = {
     method: "POST",
@@ -7,8 +9,9 @@ export const addStudent = async (obj) => {
     },
   };
   try {
-    return await fetch("http://localhost:3000/students", options).then((res) => res.json());
+    const res = await fetch(API_URL, options);
+    return await res.json();
   } catch (error) {
-    console.log(error);
+    console.log("Помилка при додаванні:", error);
   }
 };

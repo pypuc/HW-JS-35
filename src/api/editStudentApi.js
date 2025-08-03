@@ -2,7 +2,7 @@ import { API_URL } from "../config.js";
 
 export const updateStudent = async (id, student) => {
   const options = {
-    method: "PATCH",
+    method: "PUT",
     body: JSON.stringify(student),
     headers: {
       "Content-Type": "application/json; charset=UTF-8",
@@ -10,8 +10,9 @@ export const updateStudent = async (id, student) => {
   };
 
   try {
-    return await fetch(`${API_URL}/${id}`, options).then((res) => res.json());
+    const res = await fetch(`${API_URL}/${id}`, options);
+    return await res.json();
   } catch (error) {
-    console.log(error);
+    console.log("Помилка при оновленні:", error);
   }
 };
